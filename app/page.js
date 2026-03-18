@@ -191,7 +191,7 @@ export default function Home() {
                       rel="noreferrer"
                       className={styles.inlineLink}
                     >
-                      azim-amizie-94a696295
+                      Azim Amizie LinkedIn
                     </a>
                   </strong>
                 </div>
