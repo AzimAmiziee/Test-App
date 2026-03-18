@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./page.module.css";
 
@@ -58,6 +58,48 @@ const strengths = [
   "Business-focused software solutions",
 ];
 
+function Reveal({ children, direction = "up", delay = 0, className = "" }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(node);
+        }
+      },
+      {
+        threshold: 0.18,
+        rootMargin: "0px 0px -60px 0px",
+      }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={[
+        styles.reveal,
+        styles[`reveal${direction.charAt(0).toUpperCase() + direction.slice(1)}`],
+        visible ? styles.revealVisible : "",
+        className,
+      ].join(" ")}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function Home() {
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const [cursorActive, setCursorActive] = useState(false);
@@ -72,18 +114,26 @@ export default function Home() {
 
     window.addEventListener("mousemove", moveCursor);
 
-    const hoverTargets = document.querySelectorAll("a, button, .hover-target");
-    hoverTargets.forEach((el) => {
-      el.addEventListener("mouseenter", activateCursor);
-      el.addEventListener("mouseleave", deactivateCursor);
-    });
+    const bindHoverEvents = () => {
+      const hoverTargets = document.querySelectorAll("a, button, .hover-target");
+      hoverTargets.forEach((el) => {
+        el.addEventListener("mouseenter", activateCursor);
+        el.addEventListener("mouseleave", deactivateCursor);
+      });
+
+      return () => {
+        hoverTargets.forEach((el) => {
+          el.removeEventListener("mouseenter", activateCursor);
+          el.removeEventListener("mouseleave", deactivateCursor);
+        });
+      };
+    };
+
+    const cleanupHover = bindHoverEvents();
 
     return () => {
       window.removeEventListener("mousemove", moveCursor);
-      hoverTargets.forEach((el) => {
-        el.removeEventListener("mouseenter", activateCursor);
-        el.removeEventListener("mouseleave", deactivateCursor);
-      });
+      cleanupHover();
     };
   }, []);
 
@@ -99,183 +149,203 @@ export default function Home() {
 
       <main className={styles.main}>
         <section className={styles.hero}>
-          <div className={styles.heroText}>
-            <div className={styles.badge}>Software Developer</div>
+          <Reveal direction="left" delay={100}>
+            <div className={styles.heroText}>
+              <div className={styles.badge}>Software Developer</div>
 
-            <h1 className={styles.title}>
-              Building software
-              <br />
-              <span>that looks clean and works hard.</span>
-            </h1>
+              <h1 className={styles.title}>
+                Building software
+                <br />
+                <span>that looks clean and works hard.</span>
+              </h1>
 
-            <p className={styles.description}>
-              I’m Azim Amizie, a software developer focused on building reliable
-              web applications, scalable systems, and practical internal tools
-              that improve real business operations.
-            </p>
+              <p className={styles.description}>
+                I’m Azim Amizie, a software developer focused on building reliable
+                web applications, scalable systems, and practical internal tools
+                that improve real business operations.
+              </p>
 
-            <div className={styles.actions}>
-              <a href="#projects" className={styles.primaryBtn}>
-                View Projects
-              </a>
-              <a
-                href="mailto:itsayeazim@gmail.com"
-                className={styles.secondaryBtn}
-              >
-                Contact Me
-              </a>
-            </div>
-
-            <div className={styles.quickInfo}>
-              <div className={styles.infoCard}>
-                <span>Current Focus</span>
-                <strong>Laravel, React, .NET, SQL</strong>
-              </div>
-              <div className={styles.infoCard}>
-                <span>LinkedIn</span>
-                <strong>
-                  <a
-                    href="https://www.linkedin.com/in/azim-amizie-94a696295/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.inlineLink}
-                  >
-                    Azim-Amizie LinkedIn
-                  </a>
-                </strong>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.heroVisual}>
-            <div className={styles.imageCard}>
-              <div className={styles.imageWrap}>
-                <Image
-                  src="/azim.png"
-                  alt="Azim Amizie"
-                  fill
-                  className={styles.profileImage}
-                  priority
-                />
+              <div className={styles.actions}>
+                <a href="#projects" className={styles.primaryBtn}>
+                  View Projects
+                </a>
+                <a
+                  href="mailto:itsayeazim@gmail.com"
+                  className={styles.secondaryBtn}
+                >
+                  Contact Me
+                </a>
               </div>
 
-              <div className={styles.imageOverlay}>
-                <p>Azim Amizie</p>
-                <span>Software Developer</span>
+              <div className={styles.quickInfo}>
+                <div className={styles.infoCard}>
+                  <span>Current Focus</span>
+                  <strong>Laravel, React, .NET, SQL</strong>
+                </div>
+                <div className={styles.infoCard}>
+                  <span>LinkedIn</span>
+                  <strong>
+                    <a
+                      href="https://www.linkedin.com/in/azim-amizie-94a696295/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.inlineLink}
+                    >
+                      azim-amizie-94a696295
+                    </a>
+                  </strong>
+                </div>
               </div>
             </div>
+          </Reveal>
 
-            <div className={styles.floatingCard}>
-              <span className={styles.floatingLabel}>Selected Stack</span>
-              <strong>Laravel • React • Angular • .NET • PostgreSQL</strong>
+          <Reveal direction="right" delay={200}>
+            <div className={styles.heroVisual}>
+              <div className={styles.imageCard}>
+                <div className={styles.imageWrap}>
+                  <Image
+                    src="/azim.png"
+                    alt="Azim Amizie"
+                    fill
+                    className={styles.profileImage}
+                    priority
+                  />
+                </div>
+
+                <div className={styles.imageOverlay}>
+                  <p>Azim Amizie</p>
+                  <span>Software Developer</span>
+                </div>
+              </div>
+
+              <div className={styles.floatingCard}>
+                <span className={styles.floatingLabel}>Selected Stack</span>
+                <strong>Laravel • React • Angular • .NET • PostgreSQL</strong>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </section>
 
         <section className={styles.section}>
-          <div className={styles.sectionTop}>
-            <div>
-              <span className={styles.sectionLabel}>About</span>
-              <h2 className={styles.sectionTitle}>What I do</h2>
+          <Reveal direction="up">
+            <div className={styles.sectionTop}>
+              <div>
+                <span className={styles.sectionLabel}>About</span>
+                <h2 className={styles.sectionTitle}>What I do</h2>
+              </div>
             </div>
-          </div>
+          </Reveal>
 
           <div className={styles.aboutGrid}>
-            <div className={styles.aboutCard}>
-              <p>
-                I build software with a strong focus on clarity, maintainability,
-                and real-world usefulness. My experience includes public-facing
-                platforms, internal enterprise systems, workflow improvements,
-                and backend-driven applications that support daily operations.
-              </p>
-            </div>
+            <Reveal direction="left" delay={100}>
+              <div className={styles.aboutCard}>
+                <p>
+                  I build software with a strong focus on clarity, maintainability,
+                  and real-world usefulness. My experience includes public-facing
+                  platforms, internal enterprise systems, workflow improvements,
+                  and backend-driven applications that support daily operations.
+                </p>
+              </div>
+            </Reveal>
 
-            <div className={styles.strengthGrid}>
-              {strengths.map((item) => (
-                <div key={item} className={styles.strengthItem}>
-                  {item}
-                </div>
-              ))}
-            </div>
+            <Reveal direction="right" delay={180}>
+              <div className={styles.strengthGrid}>
+                {strengths.map((item, index) => (
+                  <div key={item} className={styles.strengthItem}>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </Reveal>
           </div>
         </section>
 
         <section className={styles.section} id="projects">
-          <div className={styles.sectionTop}>
-            <div>
-              <span className={styles.sectionLabel}>Portfolio</span>
-              <h2 className={styles.sectionTitle}>Selected Projects</h2>
+          <Reveal direction="up">
+            <div className={styles.sectionTop}>
+              <div>
+                <span className={styles.sectionLabel}>Portfolio</span>
+                <h2 className={styles.sectionTitle}>Selected Projects</h2>
+              </div>
+              <p className={styles.sectionIntro}>
+                A curated view of the platforms and systems I’ve worked on. Public
+                projects are linked directly, while private systems are presented
+                through scope, technical responsibilities, and engineering impact.
+              </p>
             </div>
-            <p className={styles.sectionIntro}>
-              A curated view of the platforms and systems I’ve worked on. Public
-              projects are linked directly, while private systems are presented
-              through scope, technical responsibilities, and engineering impact.
-            </p>
-          </div>
+          </Reveal>
 
           <div className={styles.projectGrid}>
-            {projects.map((project) => (
-              <article key={project.title} className={`${styles.projectCard} hover-target`}>
-                <div>
-                  <span className={styles.projectCategory}>{project.category}</span>
-                  <h3>{project.title}</h3>
-                  <p className={styles.projectDescription}>{project.description}</p>
+            {projects.map((project, index) => (
+              <Reveal
+                key={project.title}
+                direction={index % 2 === 0 ? "left" : "right"}
+                delay={index * 90}
+              >
+                <article className={`${styles.projectCard} hover-target`}>
+                  <div>
+                    <span className={styles.projectCategory}>{project.category}</span>
+                    <h3>{project.title}</h3>
+                    <p className={styles.projectDescription}>{project.description}</p>
 
-                  <div className={styles.techList}>
-                    {project.stack.map((tech) => (
-                      <span key={tech} className={styles.techTag}>
-                        {tech}
-                      </span>
-                    ))}
+                    <div className={styles.techList}>
+                      {project.stack.map((tech) => (
+                        <span key={tech} className={styles.techTag}>
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className={styles.projectBottom}>
-                  <p className={styles.projectNote}>{project.note}</p>
+                  <div className={styles.projectBottom}>
+                    <p className={styles.projectNote}>{project.note}</p>
 
-                  {project.link ? (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.projectLink}
-                    >
-                      {project.linkLabel}
-                    </a>
-                  ) : (
-                    <span className={styles.projectPrivate}>Private Project</span>
-                  )}
-                </div>
-              </article>
+                    {project.link ? (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={styles.projectLink}
+                      >
+                        {project.linkLabel}
+                      </a>
+                    ) : (
+                      <span className={styles.projectPrivate}>Private Project</span>
+                    )}
+                  </div>
+                </article>
+              </Reveal>
             ))}
           </div>
         </section>
 
         <section className={styles.section}>
-          <div className={styles.contactCard}>
-            <div>
-              <span className={styles.sectionLabel}>Contact</span>
-              <h2 className={styles.sectionTitle}>Let’s build something great</h2>
-              <p className={styles.sectionIntro}>
-                I’m open to software development opportunities, engineering
-                collaborations, and impactful digital projects.
-              </p>
-            </div>
+          <Reveal direction="up">
+            <div className={styles.contactCard}>
+              <div>
+                <span className={styles.sectionLabel}>Contact</span>
+                <h2 className={styles.sectionTitle}>Let’s build something great</h2>
+                <p className={styles.sectionIntro}>
+                  I’m open to software development opportunities, engineering
+                  collaborations, and impactful digital projects.
+                </p>
+              </div>
 
-            <div className={styles.contactActions}>
-              <a href="mailto:itsayeazim@gmail.com" className={styles.primaryBtn}>
-                Email Me
-              </a>
-              <a
-                href="https://www.linkedin.com/in/azim-amizie-94a696295/"
-                target="_blank"
-                rel="noreferrer"
-                className={styles.secondaryBtn}
-              >
-                LinkedIn
-              </a>
+              <div className={styles.contactActions}>
+                <a href="mailto:itsayeazim@gmail.com" className={styles.primaryBtn}>
+                  Email Me
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/azim-amizie-94a696295/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.secondaryBtn}
+                >
+                  LinkedIn
+                </a>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
     </div>
