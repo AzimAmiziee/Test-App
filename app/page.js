@@ -7,39 +7,53 @@ import styles from "./page.module.css";
 const projects = [
   {
     num: "01",
+    cat: "Freelance · Esports Platform",
+    title: "Team Vamos",
+    desc: "Full-scale esports platform for MPL Malaysia's Team Vamos — featuring an official merchandise store, digital vault, loyalty rewards system, match prediction engine, MPL standings tracker, team rosters, news hub, sponsor management, and a fan community portal. Built end-to-end with Next.js and Supabase, powering 50K+ community members.",
+    stack: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS"],
+    link: "https://team-vamos.vercel.app/",
+    linkLabel: "View Live →",
+    status: "in-progress",
+  },
+  {
+    num: "02",
     cat: "Public Platform + Internal Systems",
     title: "Peneraju Website & Systems",
     desc: "Full digital ecosystem for Yayasan Peneraju — public-facing website and internal operational systems. Improved usability, platform stability, and backend scalability using Laravel and PostgreSQL.",
     stack: ["Laravel", "PHP", "PostgreSQL", "JavaScript"],
     link: "https://peneraju.org",
     linkLabel: "Visit Site →",
+    status: null,
   },
   {
-    num: "02",
+    num: "03",
     cat: "Enterprise In-House System",
     title: "GPMS",
     desc: "Built and refined modules for an internal enterprise platform. Improved frontend responsiveness, backend logic, and database structure to streamline business operations at scale.",
     stack: ["Angular", "Tailwind CSS", ".NET", "SQL Server"],
     link: null,
     linkLabel: null,
+    status: null,
   },
   {
-    num: "03",
+    num: "04",
     cat: "Management Information System",
     title: "MIS System",
     desc: "Developed and enhanced internal MIS features for reporting, data handling, and process efficiency. Worked across UI, business logic, and database optimization layers.",
     stack: ["React.js", ".NET", "ASP.NET Core", "SQL Server"],
     link: null,
     linkLabel: null,
+    status: null,
   },
   {
-    num: "04",
+    num: "05",
     cat: "Internship Project",
     title: "Led Vision Website",
     desc: "Enhanced the company website — content updates, UI improvements, and SEO. Also built Excel Macro automation tools to improve internal productivity workflows.",
     stack: ["WordPress", "SEO", "Excel VBA", "Visual Basic"],
     link: "https://ledvision.com.my/",
     linkLabel: "Visit Site →",
+    status: null,
   },
 ];
 
@@ -54,7 +68,7 @@ const skills = [
   { n: "08", title: "Automation", body: "Removing bottlenecks — from VBA macros to full workflow tooling." },
 ];
 
-const stackChips = ["Laravel", "PHP", "React.js", "Angular", ".NET Core", "ASP.NET", "PostgreSQL", "SQL Server", "Tailwind CSS", "JavaScript", "TypeScript", "Excel VBA"];
+const stackChips = ["Laravel", "PHP", "React.js", "Angular", ".NET Core", "ASP.NET", "PostgreSQL", "SQL Server", "Next.js", "Supabase", "Tailwind CSS", "JavaScript", "TypeScript", "Excel VBA"];
 
 const CODE_LINES = [
   "const dev = new Developer();",
@@ -371,7 +385,7 @@ export default function Home() {
         </div>
 
         <p className={`${styles.heroDesc} ${styles.reveal}`} data-reveal data-delay="300">
-          I'm <strong>Azim Amizie</strong> — a full-stack developer building reliable web apps,
+          I&apos;m <strong>Azim Amizie</strong> — a full-stack developer building reliable web apps,
           scalable enterprise systems, and tools that move businesses forward.
         </p>
 
@@ -399,7 +413,7 @@ export default function Home() {
             <p>
               <span className={styles.termPrompt}>$</span> cat stack.txt
             </p>
-            <p className={styles.termOut}>Laravel · React · Angular · .NET · PostgreSQL</p>
+            <p className={styles.termOut}>Laravel · React · Angular · .NET · Next.js · Supabase</p>
             <p>
               <span className={styles.termPrompt}>$</span> git status
             </p>
@@ -539,12 +553,35 @@ export default function Home() {
           </div>
           <div className={styles.projList}>
             {projects.map((p, i) => (
-              <div key={p.num} className={`${styles.pr} ${styles.reveal} hoverTarget`} data-reveal data-delay={`${i * 80}`}>
+              <div
+                key={p.num}
+                className={`${styles.pr} ${p.status === "in-progress" ? styles.prHighlight : ""} ${styles.reveal} hoverTarget`}
+                data-reveal
+                data-delay={`${i * 80}`}
+              >
                 <div className={styles.prNum}>{p.num}</div>
                 <div className={styles.prBody}>
-                  <div className={styles.prCat}>{p.cat}</div>
+                  <div className={styles.prCatRow}>
+                    <div className={styles.prCat}>{p.cat}</div>
+                    {p.status === "in-progress" && (
+                      <div className={styles.prInProgress}>
+                        <span className={styles.prProgressDot} />
+                        In Progress
+                      </div>
+                    )}
+                  </div>
                   <div className={styles.prName}>{p.title}</div>
                   <div className={styles.prDesc}>{p.desc}</div>
+                  {p.status === "in-progress" && (
+                    <div className={styles.prFeatures}>
+                      <span>Merch Store</span>
+                      <span>Loyalty Rewards</span>
+                      <span>Match Predictions</span>
+                      <span>MPL Standings</span>
+                      <span>News Hub</span>
+                      <span>Fan Community</span>
+                    </div>
+                  )}
                 </div>
                 <div className={styles.prTags}>
                   {p.stack.map((t) => (
@@ -555,7 +592,7 @@ export default function Home() {
                 </div>
                 <div className={styles.prAct}>
                   {p.link ? (
-                    <a href={p.link} target="_blank" rel="noreferrer" className={styles.prLink}>
+                    <a href={p.link} target="_blank" rel="noreferrer" className={`${styles.prLink} ${p.status === "in-progress" ? styles.prLinkLive : ""}`}>
                       {p.linkLabel}
                     </a>
                   ) : (
@@ -596,7 +633,7 @@ export default function Home() {
                   { l: "Email", v: "itsayeazim@gmail.com", href: "mailto:itsayeazim@gmail.com" },
                   { l: "LinkedIn", v: "Azim Amizie →", href: "https://www.linkedin.com/in/azim-amizie-94a696295/" },
                   { l: "Location", v: "Malaysia", href: null },
-                  { l: "Stack", v: "Laravel · React · .NET", href: null },
+                  { l: "Stack", v: "Laravel · React · .NET · Next.js", href: null },
                   { l: "Status", v: null, href: null, avail: true },
                 ].map((row) => (
                   <div key={row.l} className={styles.crow}>

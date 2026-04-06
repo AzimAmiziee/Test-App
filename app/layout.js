@@ -15,7 +15,6 @@ const dmMono = DM_Mono({
   display: "swap",
 });
 
-// metadata stays the same, just remove TypeScript typing
 export const metadata = {
   title: "Azim Amizie — Software Developer",
   description:
