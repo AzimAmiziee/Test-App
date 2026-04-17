@@ -1,5 +1,7 @@
 /* ─── VARIABLES ─── */
 .page {
+  /* Fade in when intro transitions out */
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
   --bg: #08080f;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-hover: rgba(255, 255, 255, 0.075);
@@ -901,4 +903,13 @@
   background: var(--orange-bright) !important;
   box-shadow: 0 0 36px rgba(232, 96, 34, 0.6) !important;
   transform: scale(1.05) !important;
+}
+
+/* ─── INTRO TRANSITION ─── */
+/* Applied while the hacker intro is visible — hides portfolio beneath it.
+   No transition here (instant hide); transition fires when class is removed. */
+.pageIntroHidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: none !important;
 }

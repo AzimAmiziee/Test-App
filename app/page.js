@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
+import HackerIntro from "./components/HackerIntro";
 
 /* ─── DATA ─── */
 const projects = [
@@ -195,8 +196,10 @@ function useCodeCanvas(canvasRef) {
 }
 
 /* ─── REVEAL HOOK ─── */
-function useReveal() {
+// ready: false during intro so scroll animations fire after the portfolio appears
+function useReveal(ready = true) {
   useEffect(() => {
+    if (!ready) return;
     const els = document.querySelectorAll("[data-reveal]");
     const io = new IntersectionObserver(
       (entries) => {
@@ -214,7 +217,7 @@ function useReveal() {
 
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [ready]);
 }
 
 /* ─── TYPEWRITER ─── */
@@ -313,7 +316,15 @@ function Cursor() {
 export default function Home() {
   const canvasRef = useRef(null);
   useCodeCanvas(canvasRef);
-  useReveal();
+
+  // "visible"  — intro is showing, portfolio hidden beneath it
+  // "fading"   — intro exit animation started, portfolio fades in simultaneously
+  // "done"     — intro unmounted, portfolio fully visible
+  const [introPhase, setIntroPhase] = useState("visible");
+
+  // Only mount reveal observers once the portfolio is actually becoming visible.
+  // This ensures scroll-triggered animations fire correctly on entry.
+  useReveal(introPhase !== "visible");
 
   const typed = useTypewriter([
     "Software Developer",
@@ -343,7 +354,17 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={styles.page}>
+    <>
+      {/* Hacker intro overlay — removed from DOM once transition completes */}
+      {introPhase !== "done" && (
+        <HackerIntro
+          onTransition={() => { window.scrollTo(0, 0); setIntroPhase("fading"); }}
+          onDone={() => setIntroPhase("done")}
+        />
+      )}
+
+      {/* Portfolio — hidden under intro, fades in when intro exits */}
+    <div className={`${styles.page} ${introPhase === "visible" ? styles.pageIntroHidden : ""}`}>
       <canvas ref={canvasRef} className={styles.canvas} />
       <Cursor />
 
@@ -669,5 +690,6 @@ export default function Home() {
         <div className={styles.footR}>Built with precision · KL, Malaysia</div>
       </footer>
     </div>
+    </>
   );
 }
